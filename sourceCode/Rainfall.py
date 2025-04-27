@@ -20,7 +20,13 @@ def rainfall(year, region):
     data[non_numeric_cols] = data[non_numeric_cols].fillna(method='ffill')
 
     data.info()
-
+    
+    def calculate_avg_rainfall(year, region):
+        temp = data[['SUBDIVISION', 'JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL',
+                     'AUG', 'SEP', 'OCT', 'NOV', 'DEC']].loc[(data['YEAR'] == year) & (data['SUBDIVISION'] == region)]
+        avg_rainfall = temp[['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC']].mean(axis=1).values[0]
+        return avg_rainfall
+    
     def plot_graphs(groundtruth, prediction, title):        
         N = 9
         ind = np.arange(N)  # the x locations for the groups
@@ -62,7 +68,7 @@ def rainfall(year, region):
             else:
                 X_year = np.concatenate((X_year, data_year[:, i:i + 3]), axis=0)
                 y_year = np.concatenate((y_year, data_year[:, i + 3]), axis=0)
-
+       
         return X_year, y_year
 
     def data_generation2(region):    
@@ -107,9 +113,16 @@ def rainfall(year, region):
         y_pred = np.array(Y_year_pred)
         plot_graphs(Y_testing, y_pred, "Year: " + str(year) + '  Region: ' + str(region))
         return mae, score
+    
+    avg = calculate_avg_rainfall(int(year), region)
+    if avg >= 200:
+        predicted_water_level = "Normal"
+    else:
+        predicted_water_level = "Low"
 
     mae, score = prediction2(int(year), region)
     mae = format(round(float(mae), 2))
     score = format(round(float(score), 2))
     keras.backend.clear_session()
-    return mae, score
+    return mae, score, predicted_water_level
+

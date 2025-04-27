@@ -94,8 +94,8 @@ def floodResult():
             print("-----------",type(results_dict),"----------")
             Table = []
             for key, value in results_dict.items():
-                # temp = []
-                # temp.extend([key,value])  #Note that this will change depending on the structure of your dictionary
+                temp = []
+                temp.extend([key,value])  #Note that this will change depending on the structure of your dictionary
                 Table.append(value)
             return render_template('flood_result.html',result=Table)
     else:
@@ -113,8 +113,8 @@ def rainfallResult():
             year=request.form['Year']
             region=request.form['SEL']
             print("##3#######",year,"#####",region,"#############")
-            mae,score=Rainfall.rainfall(year,region)
-            return render_template('rain_result.html',Mae=mae,Score=score)
+            mae,score,predicted_water_level=Rainfall.rainfall(year,region)
+            return render_template('rain_result.html',Mae=mae,Score=score,Water=predicted_water_level)
     else:
         return redirect(url_for('rainfallHome'))
     # return render_template('rainfallResult.html')
